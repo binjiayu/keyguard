@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">YDlock</string>
+    <string name="month_day_year">yyyy-MM-dd EEE</string>
+</resources>
