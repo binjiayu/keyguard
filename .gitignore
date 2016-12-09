@@ -10,4 +10,4 @@
 *.gradle
 /gradle
 .idea
-
+/.idea
