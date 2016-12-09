@@ -7,9 +7,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PixelFormat;
+import android.hardware.display.DisplayManager;
+import android.os.Build;
 import android.os.IBinder;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.WindowManager;
 
 public class StartLockService extends Service {
@@ -24,12 +28,26 @@ public class StartLockService extends Service {
     public static final String UNLOCK_ACTION = "unlock";
     private WindowManager mWinMng;
     private Context mContext;
+    private DisplayManager mDisplayManager;
+    private Display[] displays;
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onCreate() {
         // TODO Auto-generated method stub
         super.onCreate();
         mContext = getApplicationContext();
+
+        mDisplayManager = (DisplayManager)getSystemService(Context.DISPLAY_SERVICE);
+        displays = mDisplayManager.getDisplays();
+//        Display dispaly = null;
+        if (displays.length<2) {
+
+            mContext = getApplicationContext().createDisplayContext(displays[0]);
+        }else {
+            mContext = getApplicationContext().createDisplayContext(displays[2]);
+        }
+//        mContext = getApplicationContext().createDisplayContext(dispaly);
         mLockApplication = (LockApplication) mContext.getApplicationContext();
         mWinMng = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
 
@@ -116,6 +134,7 @@ public class StartLockService extends Service {
 
             WindowManager.LayoutParams param = new WindowManager.LayoutParams();
 //            param.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;//6.0以上模拟器会挂，真机可以运行，可能需要权限
+//            param.type = WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG;会挂可能需要系统、
             param.type = WindowManager.LayoutParams.TYPE_TOAST;
             param.format = PixelFormat.RGBA_8888; //设置图片格式，效果为背景透明
             // mParam.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
